@@ -124,9 +124,9 @@ gsj-stock-sense/
   - Định dạng kiểu dữ liệu trả về theo Data Classes hoặc Dict có type hinting chuẩn mực (`typing.Dict`, `typing.Optional`).
 
 #### 3. Definition of Done (DoD):
-- [ ] Toàn bộ 5 test case trong `test_asset_service.py` **PASS 100%**.
-- [ ] Bảo mật giá vốn được kiểm soát chặt chẽ ở tầng service, không có kẽ hở dữ liệu cho vai trò Thủ kho.
-- [ ] Code coverage của `asset_service.py` đạt $\ge 95\%$.
+- [x] Toàn bộ 5 test case trong `test_asset_service.py` **PASS 100%**.
+- [x] Bảo mật giá vốn được kiểm soát chặt chẽ ở tầng service, không có kẽ hở dữ liệu cho vai trò Thủ kho.
+- [x] Code coverage của `asset_service.py` đạt $\ge 95\%$.
 
 ---
 
@@ -242,8 +242,8 @@ gsj-stock-sense/
 | Bước | Hạng mục công việc (Work Items) | Thời gian ước lượng | Người phụ trách | Trạng thái |
 | :---: | :--- | :---: | :--- | :---: |
 | **P0** | Nâng cấp Schema SQLite & Bộ sinh Synthetic Data (TDD) | 1 ngày | Backend / Data Dev | **HOÀN THÀNH (100% Tests Pass)** |
-| **P1** | Lập trình Service US 1.1: Tài sản kho & Bảo mật giá vốn (TDD) | 1.5 ngày | Backend Dev | Đang tiến hành |
-| **P2** | Lập trình Service US 1.2: ATP Engine & Giữ hàng trả góp 48h (TDD) | 2 ngày | Backend Dev | Sẵn sàng |
+| **P1** | Lập trình Service US 1.1: Tài sản kho & Bảo mật giá vốn (TDD) | 1.5 ngày | Backend Dev | **HOÀN THÀNH (Coverage 95%)** |
+| **P2** | Lập trình Service US 1.2: ATP Engine & Giữ hàng trả góp 48h (TDD) | 2 ngày | Backend Dev | Đang tiến hành |
 | **P3** | Lập trình Streamlit Dashboard UI & Kết nối Services | 1.5 ngày | Frontend / Streamlit Dev | Sẵn sàng |
 | **P4** | Tối ưu hóa hiệu năng, Caching, Regression Test & Bàn giao | 1 ngày | QA / Lead Dev | Sẵn sàng |
 | **TỔNG** | **Toàn bộ Module 01: Tổng quan kho** | **7 ngày làm việc** | **Team dự án** | - |
