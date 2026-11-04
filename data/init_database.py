@@ -215,6 +215,22 @@ def init_database():
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, reservations)
 
+    # ĐỒNG BỘ inventories.reserved_qty và atp_qty CHUẨN XÁC VỚI inventory_reservations
+    cursor.execute("""
+        UPDATE inventories 
+        SET reserved_qty = COALESCE(
+            (SELECT SUM(r.reserved_qty) 
+             FROM inventory_reservations r 
+             WHERE r.branch_id = inventories.branch_id 
+               AND r.product_code = inventories.product_code 
+               AND r.status = 'ACTIVE'), 0
+        );
+    """)
+    cursor.execute("""
+        UPDATE inventories 
+        SET atp_qty = on_hand_qty - reserved_qty;
+    """)
+
     # 7. BẢNG PURCHASE_ORDERS & PO_ITEMS (Hàng đang về In-Transit)
     next_week = now + timedelta(days=3)
     po_data = [

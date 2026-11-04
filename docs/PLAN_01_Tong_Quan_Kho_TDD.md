@@ -168,10 +168,10 @@ gsj-stock-sense/
   - Đóng gói Database transaction bằng context manager (`with transaction(): ...`) để đảm bảo rollback tuyệt đối khi có lỗi.
 
 #### 3. Definition of Done (DoD):
-- [ ] Toàn bộ 6 test case trong `test_fulfillment_service.py` **PASS 100%**.
-- [ ] Cơ chế chống bán hàng ảo ngăn chặn 100% tình trạng âm kho trong các test case đặt quá số lượng khả dụng.
-- [ ] Test case mô phỏng đơn trả góp 48h tự động giải phóng hàng chính xác đến từng đơn vị sản phẩm.
-- [ ] Code coverage của `fulfillment_service.py` đạt $\ge 95\%$.
+- [x] Toàn bộ 6 test case trong `test_fulfillment_service.py` **PASS 100%**.
+- [x] Cơ chế chống bán hàng ảo ngăn chặn 100% tình trạng âm kho trong các test case đặt quá số lượng khả dụng.
+- [x] Test case mô phỏng đơn trả góp 48h tự động giải phóng hàng chính xác đến từng đơn vị sản phẩm.
+- [x] Code coverage của `fulfillment_service.py` đạt $\ge 95\%$.
 
 ---
 
@@ -243,8 +243,8 @@ gsj-stock-sense/
 | :---: | :--- | :---: | :--- | :---: |
 | **P0** | Nâng cấp Schema SQLite & Bộ sinh Synthetic Data (TDD) | 1 ngày | Backend / Data Dev | **HOÀN THÀNH (100% Tests Pass)** |
 | **P1** | Lập trình Service US 1.1: Tài sản kho & Bảo mật giá vốn (TDD) | 1.5 ngày | Backend Dev | **HOÀN THÀNH (Coverage 95%)** |
-| **P2** | Lập trình Service US 1.2: ATP Engine & Giữ hàng trả góp 48h (TDD) | 2 ngày | Backend Dev | Đang tiến hành |
-| **P3** | Lập trình Streamlit Dashboard UI & Kết nối Services | 1.5 ngày | Frontend / Streamlit Dev | Sẵn sàng |
+| **P2** | Lập trình Service US 1.2: ATP Engine & Giữ hàng trả góp 48h (TDD) | 2 ngày | Backend Dev | **HOÀN THÀNH (Coverage 98%)** |
+| **P3** | Lập trình Streamlit Dashboard UI & Kết nối Services | 1.5 ngày | Frontend / Streamlit Dev | Đang tiến hành |
 | **P4** | Tối ưu hóa hiệu năng, Caching, Regression Test & Bàn giao | 1 ngày | QA / Lead Dev | Sẵn sàng |
 | **TỔNG** | **Toàn bộ Module 01: Tổng quan kho** | **7 ngày làm việc** | **Team dự án** | - |
 
