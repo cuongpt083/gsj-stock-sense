@@ -9,7 +9,7 @@ DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data")
 DB_PATH = os.path.join(DATA_DIR, "kiotviet_electronics.db")
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def db_connection():
     assert os.path.exists(DB_PATH), f"Database file not found at {DB_PATH}"
     conn = sqlite3.connect(DB_PATH)
