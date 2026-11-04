@@ -231,3 +231,83 @@ SELECT
     ROUND(SUM(pay_installment), 2) AS total_installment
 FROM FACT_INVOICES
 GROUP BY DATE(invoice_time);
+
+-- ============================================================================
+-- 10. PHÂN HỆ TỔNG QUAN KHO (INVENTORY OVERVIEW & RESERVATION DDL - SRS MOD01)
+-- ============================================================================
+
+-- Bảng Danh mục Chi nhánh / Kho hàng
+CREATE TABLE IF NOT EXISTS branches (
+    branch_id           TEXT PRIMARY KEY,                             -- Mã chi nhánh (VD: BR_KHO_TONG, BR_CAU_GIAY, BR_HA_DONG)
+    branch_name         TEXT NOT NULL,                                -- Tên kho / Showroom
+    address             TEXT,                                         -- Địa chỉ vật lý
+    is_active           INTEGER DEFAULT 1 CHECK(is_active IN (0, 1)), -- 1: Hoạt động, 0: Tạm đóng
+    created_at          TEXT DEFAULT (DATETIME('now', 'localtime'))
+);
+
+-- Bảng Quản lý Tồn kho chi tiết theo Chi nhánh & SKU (INVENTORIES)
+CREATE TABLE IF NOT EXISTS inventories (
+    inventory_id        TEXT PRIMARY KEY,                             -- UUID định danh
+    branch_id           TEXT NOT NULL,                                -- FK -> branches
+    product_code        TEXT NOT NULL,                                -- FK -> DIM_PRODUCTS
+    on_hand_qty         INTEGER NOT NULL DEFAULT 0 CHECK(on_hand_qty >= 0),    -- Tồn thực tế
+    reserved_qty        INTEGER NOT NULL DEFAULT 0 CHECK(reserved_qty >= 0),   -- Hàng đang giữ chỗ
+    in_transit_qty      INTEGER NOT NULL DEFAULT 0 CHECK(in_transit_qty >= 0), -- Hàng đang về từ PO
+    atp_qty             INTEGER NOT NULL DEFAULT 0,                            -- Khả dụng = on_hand - reserved
+    version             INTEGER NOT NULL DEFAULT 1,                            -- Optimistic Locking version
+    last_updated        TEXT DEFAULT (DATETIME('now', 'localtime')),
+    FOREIGN KEY (branch_id) REFERENCES branches(branch_id) ON UPDATE CASCADE,
+    FOREIGN KEY (product_code) REFERENCES DIM_PRODUCTS(product_code) ON UPDATE CASCADE,
+    UNIQUE(branch_id, product_code)
+);
+
+CREATE INDEX IF NOT EXISTS idx_inv_branch_product ON inventories(branch_id, product_code);
+
+-- Bảng Chi tiết Giữ chỗ Đơn hàng (INVENTORY_RESERVATIONS - Hỗ trợ Soft Reserve Trả góp 48h)
+CREATE TABLE IF NOT EXISTS inventory_reservations (
+    reservation_id      TEXT PRIMARY KEY,                             -- UUID mã giữ chỗ
+    order_code          TEXT NOT NULL,                                -- FK -> FACT_ORDERS
+    branch_id           TEXT NOT NULL,                                -- FK -> branches
+    product_code        TEXT NOT NULL,                                -- FK -> DIM_PRODUCTS
+    reserved_qty        INTEGER NOT NULL DEFAULT 1 CHECK(reserved_qty > 0),
+    reservation_type    TEXT NOT NULL DEFAULT 'FULL_HOLD' CHECK(reservation_type IN ('FULL_HOLD', 'INSTALLMENT_HOLD')),
+    status              TEXT NOT NULL DEFAULT 'ACTIVE' CHECK(status IN ('ACTIVE', 'RELEASED', 'FULFILLED')),
+    expires_at          TEXT,                                         -- Hạn chót giữ (đối với trả góp là created_at + 48h)
+    created_at          TEXT DEFAULT (DATETIME('now', 'localtime')),
+    updated_at          TEXT DEFAULT (DATETIME('now', 'localtime')),
+    FOREIGN KEY (branch_id) REFERENCES branches(branch_id) ON UPDATE CASCADE,
+    FOREIGN KEY (product_code) REFERENCES DIM_PRODUCTS(product_code) ON UPDATE CASCADE,
+    FOREIGN KEY (order_code) REFERENCES FACT_ORDERS(order_code) ON UPDATE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_res_status_expires ON inventory_reservations(status, expires_at);
+CREATE INDEX IF NOT EXISTS idx_res_branch_product ON inventory_reservations(branch_id, product_code);
+
+-- Bảng Đơn đặt hàng Nhà cung cấp (PURCHASE_ORDERS - Quản lý Hàng đang về In-Transit)
+CREATE TABLE IF NOT EXISTS purchase_orders (
+    po_id               TEXT PRIMARY KEY,                             -- Mã đơn nhập (VD: PO-2026-001)
+    branch_id           TEXT NOT NULL,                                -- FK -> branches nhận hàng
+    vendor_name         TEXT NOT NULL,                                -- Nhà cung cấp (Sony, Daikin, LG, Samsung...)
+    status              TEXT NOT NULL DEFAULT 'CONFIRMED_IN_TRANSIT' CHECK(status IN ('DRAFT', 'CONFIRMED_IN_TRANSIT', 'COMPLETED', 'CANCELLED')),
+    expected_delivery_date TEXT,                                      -- Ngày dự kiến về (EDD)
+    note                TEXT,
+    created_at          TEXT DEFAULT (DATETIME('now', 'localtime')),
+    FOREIGN KEY (branch_id) REFERENCES branches(branch_id) ON UPDATE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_po_branch_status ON purchase_orders(branch_id, status);
+
+-- Bảng Chi tiết Đơn nhập hàng (PO_ITEMS)
+CREATE TABLE IF NOT EXISTS po_items (
+    po_item_id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    po_id               TEXT NOT NULL,
+    product_code        TEXT NOT NULL,
+    ordered_qty         INTEGER NOT NULL CHECK(ordered_qty > 0),
+    unit_cost           REAL NOT NULL CHECK(unit_cost >= 0),
+    received_qty        INTEGER NOT NULL DEFAULT 0,
+    FOREIGN KEY (po_id) REFERENCES purchase_orders(po_id) ON DELETE CASCADE,
+    FOREIGN KEY (product_code) REFERENCES DIM_PRODUCTS(product_code) ON UPDATE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_po_items_po ON po_items(po_id);
+

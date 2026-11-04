@@ -85,9 +85,9 @@ gsj-stock-sense/
   - Tạo index tối ưu hóa truy vấn: `idx_inv_branch_product`, `idx_res_status_expires`.
 
 #### 3. Definition of Done (DoD):
-- [ ] 100% test case trong `test_database_schema.py` đạt trạng thái **PASS**.
-- [ ] Database chứa tối thiểu: 3 chi nhánh, 100 sản phẩm điện máy có đầy đủ thông tin giá vốn, giá bán, danh mục 3 cấp, và có ít nhất 5 mã có đơn trả góp treo quá hạn 48h.
-- [ ] `PRAGMA foreign_key_check` trả về 0 lỗi.
+- [x] 100% test case trong `test_database_schema.py` đạt trạng thái **PASS**.
+- [x] Database chứa tối thiểu: 3 chi nhánh, 100 sản phẩm điện máy có đầy đủ thông tin giá vốn, giá bán, danh mục 3 cấp, và có ít nhất 5 mã có đơn trả góp treo quá hạn 48h.
+- [x] `PRAGMA foreign_key_check` trả về 0 lỗi.
 
 ---
 
@@ -241,8 +241,8 @@ gsj-stock-sense/
 
 | Bước | Hạng mục công việc (Work Items) | Thời gian ước lượng | Người phụ trách | Trạng thái |
 | :---: | :--- | :---: | :--- | :---: |
-| **P0** | Nâng cấp Schema SQLite & Bộ sinh Synthetic Data (TDD) | 1 ngày | Backend / Data Dev | Sẵn sàng |
-| **P1** | Lập trình Service US 1.1: Tài sản kho & Bảo mật giá vốn (TDD) | 1.5 ngày | Backend Dev | Sẵn sàng |
+| **P0** | Nâng cấp Schema SQLite & Bộ sinh Synthetic Data (TDD) | 1 ngày | Backend / Data Dev | **HOÀN THÀNH (100% Tests Pass)** |
+| **P1** | Lập trình Service US 1.1: Tài sản kho & Bảo mật giá vốn (TDD) | 1.5 ngày | Backend Dev | Đang tiến hành |
 | **P2** | Lập trình Service US 1.2: ATP Engine & Giữ hàng trả góp 48h (TDD) | 2 ngày | Backend Dev | Sẵn sàng |
 | **P3** | Lập trình Streamlit Dashboard UI & Kết nối Services | 1.5 ngày | Frontend / Streamlit Dev | Sẵn sàng |
 | **P4** | Tối ưu hóa hiệu năng, Caching, Regression Test & Bàn giao | 1 ngày | QA / Lead Dev | Sẵn sàng |
