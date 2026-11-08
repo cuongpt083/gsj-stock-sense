@@ -1,0 +1,170 @@
+/**
+ * STOCK SENSE DESIGN TOKENS (CSS VARIABLES)
+ * Tương thích: HTML Prototypes, Tailwind CSS, Web Components
+ * Ngành: Bán lẻ Điện máy & Quản lý Kho vận (High-density Data & High-contrast)
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,300..800;1,6..12,300..800&family=Rubik:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* ==========================================================================
+     1. PRIMITIVE TOKENS (BẢNG MÀU GỐC & SCALE CƠ SỞ)
+     ========================================================================== */
+  /* Neutral Palette: Industrial Slate */
+  --slate-50: #F8FAFC;
+  --slate-100: #F1F5F9;
+  --slate-200: #E2E8F0;
+  --slate-300: #CBD5E1;
+  --slate-400: #94A3B8;
+  --slate-500: #64748B;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1E293B;
+  --slate-900: #0F172A;
+
+  /* Accent: Stock Emerald (Hàng khả dụng, trạng thái tốt) */
+  --emerald-50: #ECFDF5;
+  --emerald-100: #D1FAE5;
+  --emerald-500: #10B981;
+  --emerald-600: #059669;
+  --emerald-700: #047857;
+
+  /* Warning: Amber (Sắp hết hàng, cảnh báo nhẹ) */
+  --amber-50: #FFFBEB;
+  --amber-100: #FEF3C7;
+  --amber-500: #F59E0B;
+  --amber-600: #D97706;
+  --amber-700: #B45309;
+
+  /* Danger / Destructive: Crimson Red (Hết khả dụng, Trả góp quá hạn > 48h) */
+  --red-50: #FEF2F2;
+  --red-100: #FEE2E2;
+  --red-500: #EF4444;
+  --red-600: #DC2626;
+  --red-700: #B91C1C;
+
+  /* Info: Logistics Blue (Hàng đang về từ PO) */
+  --blue-50: #EFF6FF;
+  --blue-100: #DBEAFE;
+  --blue-500: #3B82F6;
+  --blue-600: #2563EB;
+  --blue-700: #1D4ED8;
+
+  /* Typography Fonts */
+  --font-heading: 'Rubik', sans-serif;
+  --font-body: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  /* Spacing Scale (Grid 4px/8px) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Radius Scale */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 9999px;
+
+  /* Shadows (Tối giản theo phong cách Flat / Subtle Elevation) */
+  --shadow-subtle: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.08);
+  --shadow-dropdown: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ==========================================================================
+     2. SEMANTIC TOKENS (MÀU THEO Ý NGHĨA NGHIỆP VỤ)
+     ========================================================================== */
+  --color-bg-app: var(--slate-50);
+  --color-bg-surface: #FFFFFF;
+  --color-bg-subtle: var(--slate-100);
+
+  --color-text-primary: var(--slate-900);
+  --color-text-secondary: var(--slate-600);
+  --color-text-muted: var(--slate-400);
+  --color-text-inverse: #FFFFFF;
+
+  --color-border-subtle: var(--slate-200);
+  --color-border-strong: var(--slate-300);
+
+  --color-brand-primary: var(--slate-800);
+  --color-brand-primary-hover: var(--slate-900);
+  --color-brand-accent: var(--emerald-600);
+  --color-brand-accent-hover: var(--emerald-700);
+
+  /* Trạng thái Kho Điện Máy */
+  --color-status-atp-bg: var(--emerald-50);
+  --color-status-atp-border: var(--emerald-100);
+  --color-status-atp-text: var(--emerald-700);
+
+  --color-status-warning-bg: var(--amber-50);
+  --color-status-warning-border: var(--amber-100);
+  --color-status-warning-text: var(--amber-700);
+
+  --color-status-danger-bg: var(--red-50);
+  --color-status-danger-border: var(--red-100);
+  --color-status-danger-text: var(--red-700);
+
+  --color-status-transit-bg: var(--blue-50);
+  --color-status-transit-border: var(--blue-100);
+  --color-status-transit-text: var(--blue-700);
+
+  /* ==========================================================================
+     3. COMPONENT TOKENS (QUY CHUẨN THÀNH PHẦN GIAO DIỆN)
+     ========================================================================== */
+  /* Metric Card */
+  --metric-card-bg: var(--color-bg-surface);
+  --metric-card-border: var(--color-border-subtle);
+  --metric-card-radius: var(--radius-lg);
+  --metric-card-padding: var(--space-5);
+  --metric-card-shadow: var(--shadow-card);
+
+  /* Button Primary */
+  --btn-primary-bg: var(--color-brand-primary);
+  --btn-primary-text: var(--color-text-inverse);
+  --btn-primary-radius: var(--radius-md);
+  --btn-primary-height: 40px;
+
+  /* Button Action / Alert */
+  --btn-danger-bg: var(--red-600);
+  --btn-danger-bg-hover: var(--red-700);
+  --btn-danger-text: #FFFFFF;
+
+  /* Table Grid */
+  --table-header-bg: var(--slate-100);
+  --table-header-text: var(--slate-700);
+  --table-row-hover: var(--slate-50);
+  --table-border: var(--slate-200);
+}
+
+/* Kiểu chữ hỗ trợ Tabular Numbers cho dữ liệu số tồn kho & tiền tệ VNĐ */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Áp dụng font chữ cơ bản */
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg-app);
+  color: var(--color-text-primary);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+code, kbd, samp, pre, .sku-code {
+  font-family: var(--font-mono);
+}

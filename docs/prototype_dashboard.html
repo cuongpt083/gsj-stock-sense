@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stock Sense - Prototype Tổng Quan Kho Hàng Điện Máy</title>
+  
+  <!-- Google Fonts: Rubik + Nunito Sans + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Nunito+Sans:ital,opsz,wght@0,6..12,300..800;1,6..12,300..800&family=Rubik:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Chart.js CDN for Donut Allocation Chart -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Tailwind Configuration theo Design Tokens -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              primary: '#1E293B',
+              secondary: '#475569',
+              emerald: '#059669',
+              amber: '#D97706',
+              red: '#DC2626',
+              blue: '#2563EB',
+            }
+          },
+          fontFamily: {
+            heading: ['Rubik', 'sans-serif'],
+            body: ['Nunito Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Nunito Sans', sans-serif;
+      background-color: #F8FAFC;
+      color: #0F172A;
+    }
+    h1, h2, h3, h4, .font-heading {
+      font-family: 'Rubik', sans-serif;
+    }
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum";
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+  <!-- ================= TOPBAR NAVIGATION ================= -->
+  <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center text-white shadow-sm">
+          <i data-lucide="package-check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-heading font-bold text-lg tracking-wide text-white">STOCK SENSE</span>
+          <span class="text-xs text-slate-400 block -mt-1 font-mono">Retail & Logistics Intelligence</span>
+        </div>
+      </div>
+
+      <!-- Demo Control: Switcher vai trò kiểm thử Masking giá vốn -->
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center bg-slate-800 rounded-lg px-3 py-1.5 border border-slate-700">
+          <span class="text-xs text-slate-400 mr-2 flex items-center">
+            <i data-lucide="shield" class="w-3.5 h-3.5 mr-1 text-slate-400"></i> Vai trò xem:
+          </span>
+          <select id="roleSelector" onchange="toggleRole(this.value)" class="bg-transparent text-xs text-white font-semibold focus:outline-none cursor-pointer">
+            <option value="OWNER" class="bg-slate-900 text-white">Chủ Doanh Nghiệp (Xem Giá Vốn)</option>
+            <option value="WAREHOUSE" class="bg-slate-900 text-white">Thủ Kho (Ẩn Giá Vốn Bảo Mật)</option>
+          </select>
+        </div>
+
+        <div class="flex items-center space-x-2 pl-3 border-l border-slate-800">
+          <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-200">
+            QL
+          </div>
+          <span class="text-xs font-medium text-slate-300 hidden md:inline">Nguyễn Văn Quản Lý</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN DASHBOARD CONTAINER ================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- TOOLBAR BỘ LỌC ĐA CHIỀU -->
+    <div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- Lọc chi nhánh -->
+        <div class="flex items-center space-x-1.5">
+          <span class="text-xs text-slate-500 font-semibold"><i data-lucide="map-pin" class="w-3.5 h-3.5 inline"></i> Kho:</span>
+          <select class="text-xs font-medium bg-slate-50 border border-slate-300 rounded-md px-2.5 py-1.5 text-slate-800 focus:ring-1 focus:ring-slate-400 cursor-pointer">
+            <option>Tất cả chi nhánh (Kho Tổng + 2 Showroom)</option>
+            <option>Kho Tổng Hà Nội - KCN Đài Tư</option>
+            <option>Showroom Cầu Giấy (122 Xuân Thủy)</option>
+            <option>Showroom Hà Đông (88 Quang Trung)</option>
+          </select>
+        </div>
+
+        <!-- Lọc ngành hàng -->
+        <div class="flex items-center space-x-1.5">
+          <span class="text-xs text-slate-500 font-semibold"><i data-lucide="layers" class="w-3.5 h-3.5 inline"></i> Ngành:</span>
+          <select class="text-xs font-medium bg-slate-50 border border-slate-300 rounded-md px-2.5 py-1.5 text-slate-800 focus:ring-1 focus:ring-slate-400 cursor-pointer">
+            <option>Tất cả ngành hàng</option>
+            <option>Điện lạnh (Máy lạnh, Tủ lạnh)</option>
+            <option>Điện tử (Smart Tivi, Loa thanh)</option>
+            <option>Gia dụng (Máy giặt, Lò vi sóng)</option>
+            <option>Công nghệ (Smartphone, Tablet)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Tìm kiếm -->
+      <div class="relative w-full md:w-64">
+        <input 
+          type="text" 
+          placeholder="Tìm SKU, Tivi, Daikin..." 
+          class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md pl-8 pr-3 py-1.5 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-500"
+        />
+        <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+      </div>
+    </div>
+
+    <!-- ================= KHỐI 1 (PHÚT 1): TỔNG QUAN TÀI SẢN KHO (US 1.1) ================= -->
+    <div class="mb-6">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base font-heading font-bold text-slate-800 flex items-center">
+          <span class="w-2 h-2 rounded-full bg-slate-800 mr-2"></span>
+          1. Tổng Quan Tài Sản Kho & Vốn Lưu Động
+        </h2>
+        <span class="text-xs text-slate-500 font-mono">Dữ liệu thời gian thực</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Metric 1: Tổng SKU -->
+        <div class="bg-white rounded-lg p-5 border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tổng Số Mã Hàng (SKUs)</span>
+            <span class="p-1.5 bg-slate-100 rounded text-slate-600"><i data-lucide="boxes" class="w-4 h-4"></i></span>
+          </div>
+          <div class="text-2xl font-bold text-slate-900 tabular-nums mb-1 font-heading">56 mã hàng</div>
+          <div class="flex items-center text-xs text-emerald-600 font-medium">
+            <i data-lucide="trending-up" class="w-3.5 h-3.5 mr-1"></i>
+            <span>+2.5% so với tuần trước</span>
+          </div>
+        </div>
+
+        <!-- Metric 2: Tổng Tồn Vật Lý -->
+        <div class="bg-white rounded-lg p-5 border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tổng Tồn Kho Vật Lý</span>
+            <span class="p-1.5 bg-slate-100 rounded text-slate-600"><i data-lucide="warehouse" class="w-4 h-4"></i></span>
+          </div>
+          <div class="text-2xl font-bold text-slate-900 tabular-nums mb-1 font-heading">1,824 sản phẩm</div>
+          <div class="flex items-center text-xs text-slate-500 font-medium">
+            <i data-lucide="arrow-down-right" class="w-3.5 h-3.5 mr-1 text-slate-400"></i>
+            <span>-1.8% xuất bán hôm nay</span>
+          </div>
+        </div>
+
+        <!-- Metric 3: Tổng Giá Vốn Tồn Kho (Có Masking) -->
+        <div class="bg-white rounded-lg p-5 border border-slate-200 shadow-sm transition-all" id="valuationCard">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tổng Giá Vốn Tồn Kho</span>
+            <span class="p-1.5 bg-slate-100 rounded text-slate-600"><i data-lucide="badge-dollar-sign" class="w-4 h-4"></i></span>
+          </div>
+          <div class="text-2xl font-bold text-slate-900 tabular-nums mb-1 font-heading" id="valuationValue">
+            15.820.500.000 đ
+          </div>
+          <div class="flex items-center text-xs text-emerald-600 font-medium" id="valuationTrend">
+            <i data-lucide="trending-down" class="w-3.5 h-3.5 mr-1 text-emerald-600"></i>
+            <span>-0.5% vốn lưu động tối ưu</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= KHỐI 2 (PHÚT 2): DÒNG CHẢY HÀNG HÓA & KIỂM SOÁT ATP (US 1.2) ================= -->
+    <div class="mb-6">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base font-heading font-bold text-slate-800 flex items-center">
+          <span class="w-2 h-2 rounded-full bg-emerald-600 mr-2"></span>
+          2. Kiểm Soát Đơn Hàng & Hàng Khả Dụng Bán (ATP Engine)
+        </h2>
+        <span class="text-xs text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 font-medium">
+          Chống bán hàng ảo
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- ATP -->
+        <div class="bg-white rounded-lg p-4 border border-emerald-200 shadow-sm bg-emerald-50/20">
+          <div class="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-1 flex items-center justify-between">
+            <span>Khả Dụng Bán (ATP)</span>
+            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
+          </div>
+          <div class="text-2xl font-bold text-emerald-700 tabular-nums mb-1 font-heading" id="kpi-atp">1,535 chiếc</div>
+          <p class="text-xs text-emerald-600">Sẵn sàng xuất bán giao ngay</p>
+        </div>
+
+        <!-- Reserved -->
+        <div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm">
+          <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 flex items-center justify-between">
+            <span>Hàng Đang Giữ Chỗ</span>
+            <i data-lucide="lock" class="w-4 h-4 text-slate-400"></i>
+          </div>
+          <div class="text-2xl font-bold text-slate-800 tabular-nums mb-1 font-heading" id="kpi-reserved">289 chiếc</div>
+          <p class="text-xs text-slate-500">Trả thẳng: 144 | Trả góp: 145</p>
+        </div>
+
+        <!-- Trả góp treo > 48h -->
+        <div class="bg-white rounded-lg p-4 border border-red-200 shadow-sm bg-red-50/30">
+          <div class="text-xs font-bold text-red-700 uppercase tracking-wider mb-1 flex items-center justify-between">
+            <span>Trả Góp Treo &gt; 48H</span>
+            <i data-lucide="clock-alert" class="w-4 h-4 text-red-600"></i>
+          </div>
+          <div class="text-2xl font-bold text-red-700 tabular-nums mb-1 font-heading" id="kpi-expired">3 chiếc</div>
+          <p class="text-xs text-red-600 font-semibold">CẦN GIẢI PHÓNG GẤP</p>
+        </div>
+
+        <!-- In-Transit -->
+        <div class="bg-white rounded-lg p-4 border border-blue-200 shadow-sm bg-blue-50/20">
+          <div class="text-xs font-bold text-blue-700 uppercase tracking-wider mb-1 flex items-center justify-between">
+            <span>Hàng Đang Trên Đường Về</span>
+            <i data-lucide="truck" class="w-4 h-4 text-blue-600"></i>
+          </div>
+          <div class="text-2xl font-bold text-blue-700 tabular-nums mb-1 font-heading">35 chiếc</div>
+          <p class="text-xs text-blue-600">Từ các đơn nhập PO</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= KHỐI 3 (PHÚT 3): TÁC CHIẾN RA QUYẾT ĐỊNH (US 1.2) ================= -->
+    <div class="mb-6">
+      <!-- Cảnh báo khẩn cấp giải phóng đơn trả góp -->
+      <div id="alertBanner" class="bg-red-50 border-l-4 border-red-600 p-4 rounded-r-lg mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
+        <div class="flex items-start">
+          <div class="flex-shrink-0 text-red-600 mr-3 mt-0.5">
+            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h4 class="text-sm font-bold text-red-900">CẢNH BÁO NGHẼN DÒNG TIỀN DO ĐƠN TRẢ GÓP QUÁ HẠN 48 GIỜ</h4>
+            <p class="text-xs text-red-700 mt-0.5">
+              Có <strong class="font-bold underline" id="alertQty">3 sản phẩm</strong> đang bị giữ chỗ quá hạn thẩm định tín dụng, khiến tồn khả dụng bán (ATP) bị thiếu hụt!
+            </p>
+          </div>
+        </div>
+        <button 
+          onclick="openReleaseModal()"
+          class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold uppercase tracking-wider rounded-md shadow transition duration-150 whitespace-nowrap"
+        >
+          <i data-lucide="zap" class="w-4 h-4 mr-1.5"></i>
+          Giải Phóng Đơn Quá Hạn &gt; 48H
+        </button>
+      </div>
+
+      <!-- Phân bổ vốn & Top 5 sản phẩm đọng vốn -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+        <!-- Biểu đồ phân bổ -->
+        <div class="lg:col-span-5 bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-3 flex items-center justify-between">
+            <span>Cơ Cấu Vốn Theo Ngành Hàng</span>
+            <span class="text-xs font-normal text-slate-400 font-mono">Tỷ trọng %</span>
+          </h3>
+          <div class="h-64 flex items-center justify-center">
+            <canvas id="categoryChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Top 5 sản phẩm đọng vốn -->
+        <div class="lg:col-span-7 bg-white p-5 rounded-lg border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-3 flex items-center justify-between">
+              <span>Top 5 Sản Phẩm Chiếm Vốn Cao Nhất</span>
+              <span class="text-xs text-slate-500 font-mono">Cần theo dõi vòng quay</span>
+            </h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-slate-200 text-slate-500 font-semibold">
+                    <th class="py-2">Tên Sản Phẩm</th>
+                    <th class="py-2 text-right">Tồn Kho</th>
+                    <th class="py-2 text-right cost-col">Tổng Vốn (VNĐ)</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  <tr>
+                    <td class="py-2.5 font-medium text-slate-900">Smart Tivi Neo QLED Samsung 75"</td>
+                    <td class="py-2.5 text-right tabular-nums text-slate-700">6 chiếc</td>
+                    <td class="py-2.5 text-right tabular-nums font-bold text-slate-900 cost-col">228.000.000 đ</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2.5 font-medium text-slate-900">Tủ lạnh Panasonic Inverter 495L</td>
+                    <td class="py-2.5 text-right tabular-nums text-slate-700">15 chiếc</td>
+                    <td class="py-2.5 text-right tabular-nums font-bold text-slate-900 cost-col">390.000.000 đ</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2.5 font-medium text-slate-900">iPhone 16 Pro Max 256GB Titanium</td>
+                    <td class="py-2.5 text-right tabular-nums text-slate-700">30 chiếc</td>
+                    <td class="py-2.5 text-right tabular-nums font-bold text-slate-900 cost-col">855.000.000 đ</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2.5 font-medium text-slate-900">Smart Tivi Sony Bravia OLED 65"</td>
+                    <td class="py-2.5 text-right tabular-nums text-slate-700">18 chiếc</td>
+                    <td class="py-2.5 text-right tabular-nums font-bold text-slate-900 cost-col">432.000.000 đ</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2.5 font-medium text-slate-900">Samsung Galaxy S24 Ultra 256GB</td>
+                    <td class="py-2.5 text-right tabular-nums text-slate-700">45 chiếc</td>
+                    <td class="py-2.5 text-right tabular-nums font-bold text-slate-900 cost-col">1.012.500.000 đ</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 text-right">
+            <span class="text-xs text-slate-500">Chiếm <strong>48.5%</strong> tổng vốn lưu động toàn kho</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- BẢNG CHI TIẾT TRẠNG THÁI HÀNG HÓA -->
+      <div class="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+        <div class="p-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center">
+            <i data-lucide="clipboard-list" class="w-4 h-4 mr-2 text-slate-500"></i>
+            Chi Tiết Hàng Hóa Cần Theo Dõi Tồn Kho & Giao Vận
+          </h3>
+          <div class="flex items-center space-x-2">
+            <span class="text-xs text-slate-500 font-medium">Lọc:</span>
+            <button class="px-2.5 py-1 text-xs font-semibold rounded bg-slate-900 text-white">Tất cả (56)</button>
+            <button class="px-2.5 py-1 text-xs font-medium rounded bg-slate-100 hover:bg-slate-200 text-slate-700">Cảnh báo (4)</button>
+            <button class="px-2.5 py-1 text-xs font-medium rounded bg-slate-100 hover:bg-slate-200 text-slate-700">Đang về (2)</button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-100 text-slate-700 uppercase tracking-wider border-b border-slate-200 font-semibold">
+              <tr>
+                <th class="py-3 px-4">Mã SKU</th>
+                <th class="py-3 px-4">Tên Sản Phẩm</th>
+                <th class="py-3 px-4">Ngành Hàng</th>
+                <th class="py-3 px-4 text-right">Tồn Kho</th>
+                <th class="py-3 px-4 text-right">Đang Giữ</th>
+                <th class="py-3 px-4 text-right font-bold text-emerald-700">Khả Dụng (ATP)</th>
+                <th class="py-3 px-4 text-right text-blue-700">Đang Về</th>
+                <th class="py-3 px-4 text-center">Trạng Thái</th>
+                <th class="py-3 px-4 text-center">Thao Tác</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <!-- Item 1: Hết khả dụng do đơn giữ chỗ (Tivi Sony OLED) -->
+              <tr class="hover:bg-slate-50 transition bg-red-50/20" id="row-sony">
+                <td class="py-3 px-4 font-mono font-medium text-slate-800">SP_SN_XR65</td>
+                <td class="py-3 px-4 font-medium text-slate-900">Smart Tivi Sony Bravia OLED 4K 65 inch XR-65A80L</td>
+                <td class="py-3 px-4 text-slate-500">Điện tử > Tivi</td>
+                <td class="py-3 px-4 text-right tabular-nums text-slate-800 font-semibold">18</td>
+                <td class="py-3 px-4 text-right tabular-nums text-red-600 font-bold" id="sony-reserved">18</td>
+                <td class="py-3 px-4 text-right tabular-nums font-black text-red-600 bg-red-50" id="sony-atp">0</td>
+                <td class="py-3 px-4 text-right tabular-nums text-blue-600 font-semibold">10</td>
+                <td class="py-3 px-4 text-center" id="sony-status">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-red-50 text-red-700 border border-red-200">
+                    HẾT KHẢ DỤNG
+                  </span>
+                </td>
+                <td class="py-3 px-4 text-center">
+                  <button onclick="openReleaseModal()" class="text-red-600 hover:text-red-800 font-semibold underline">Giải phóng 1 đơn</button>
+                </td>
+              </tr>
+
+              <!-- Item 2: Đang về (Daikin Inverter) -->
+              <tr class="hover:bg-slate-50 transition">
+                <td class="py-3 px-4 font-mono font-medium text-slate-800">SP_DK_FTKC</td>
+                <td class="py-3 px-4 font-medium text-slate-900">Máy lạnh Daikin Inverter 1.5 HP FTKC35UVMV</td>
+                <td class="py-3 px-4 text-slate-500">Điện lạnh > Máy lạnh</td>
+                <td class="py-3 px-4 text-right tabular-nums text-slate-800">35</td>
+                <td class="py-3 px-4 text-right tabular-nums text-slate-600">5</td>
+                <td class="py-3 px-4 text-right tabular-nums font-bold text-emerald-600">30</td>
+                <td class="py-3 px-4 text-right tabular-nums text-blue-600 font-semibold">10</td>
+                <td class="py-3 px-4 text-center">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                    ĐANG VỀ (10)
+                  </span>
+                </td>
+                <td class="py-3 px-4 text-center">
+                  <button class="text-slate-400 hover:text-slate-600"><i data-lucide="eye" class="w-4 h-4 inline"></i></button>
+                </td>
+              </tr>
+
+              <!-- Item 3: Tủ lạnh Panasonic -->
+              <tr class="hover:bg-slate-50 transition">
+                <td class="py-3 px-4 font-mono font-medium text-slate-800">SP_PA_CW53</td>
+                <td class="py-3 px-4 font-medium text-slate-900">Tủ lạnh Panasonic Inverter 495 lít NR-CW530XMMV</td>
+                <td class="py-3 px-4 text-slate-500">Điện lạnh > Tủ lạnh</td>
+                <td class="py-3 px-4 text-right tabular-nums text-slate-800">15</td>
+                <td class="py-3 px-4 text-right tabular-nums text-slate-600">2</td>
+                <td class="py-3 px-4 text-right tabular-nums font-bold text-emerald-600">13</td>
+                <td class="py-3 px-4 text-right tabular-nums text-slate-400">0</td>
+                <td class="py-3 px-4 text-center">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    BÌNH THƯỜNG
+                  </span>
+                </td>
+                <td class="py-3 px-4 text-center">
+                  <button class="text-slate-400 hover:text-slate-600"><i data-lucide="eye" class="w-4 h-4 inline"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ================= ACTION CONFIRMATION MODAL ================= -->
+  <div id="releaseModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg max-w-md w-full p-6 shadow-2xl border border-slate-200">
+      <div class="flex items-center text-red-600 mb-3">
+        <div class="p-2 bg-red-100 rounded-full mr-3 text-red-600">
+          <i data-lucide="alert-octagon" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-slate-900 font-heading">Xác Nhận Giải Phóng Hàng Giữ Chỗ</h3>
+          <span class="text-xs text-red-600 font-semibold">Tự động hủy đơn quá hạn &gt; 48h</span>
+        </div>
+      </div>
+      
+      <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+        Hệ thống phát hiện <strong class="text-slate-900">3 đơn hàng trả góp</strong> quá hạn 48 giờ chưa hoàn tất hồ sơ. Khi bấm xác nhận, hệ thống sẽ:
+      </p>
+      
+      <ul class="text-xs text-slate-700 space-y-1.5 mb-5 bg-slate-50 p-3 rounded border border-slate-200">
+        <li class="flex items-center"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600 mr-2"></i> Hủy lệnh giữ chỗ của 3 đơn hàng.</li>
+        <li class="flex items-center"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600 mr-2"></i> Khôi phục <strong class="text-emerald-700 font-bold ml-1">3 sản phẩm</strong> vào kho khả dụng (ATP).</li>
+        <li class="flex items-center"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600 mr-2"></i> Gửi thông báo đến NV Kinh doanh phụ trách.</li>
+      </ul>
+
+      <div class="flex justify-end gap-3">
+        <button 
+          onclick="closeReleaseModal()"
+          class="px-4 py-2 border border-slate-300 rounded text-slate-700 text-xs font-semibold hover:bg-slate-100 transition"
+        >
+          Đóng
+        </button>
+        <button 
+          onclick="confirmRelease()"
+          class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded shadow transition flex items-center"
+        >
+          <i data-lucide="zap" class="w-3.5 h-3.5 mr-1.5"></i>
+          Đồng Ý Giải Phóng Ngay
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC TƯƠNG TÁC DEMO -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      initDonutChart();
+    });
+
+    // 1. Khởi tạo biểu đồ Donut phân bổ vốn
+    let donutChartInstance = null;
+    function initDonutChart() {
+      const ctx = document.getElementById('categoryChart').getContext('2d');
+      donutChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Điện Lạnh', 'Điện Tử', 'Điện Gia Dụng', 'Công Nghệ', 'Nhà Bếp'],
+          datasets: [{
+            data: [42.5, 28.0, 14.5, 10.0, 5.0],
+            backgroundColor: [
+              '#1E293B', // Slate
+              '#059669', // Emerald
+              '#2563EB', // Blue
+              '#D97706', // Amber
+              '#94A3B8'  // Muted
+            ],
+            borderWidth: 2,
+            borderColor: '#FFFFFF'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: {
+                boxWidth: 12,
+                font: { size: 11, family: 'Nunito Sans' }
+              }
+            }
+          },
+          cutout: '65%'
+        }
+      });
+    }
+
+    // 2. Chế độ kiểm thử Dynamic Cost Masking (Đổi vai trò)
+    function toggleRole(role) {
+      const valCard = document.getElementById('valuationCard');
+      const valValue = document.getElementById('valuationValue');
+      const valTrend = document.getElementById('valuationTrend');
+      const costCols = document.querySelectorAll('.cost-col');
+
+      if (role === 'WAREHOUSE') {
+        valValue.textContent = '*** đ (Bảo mật)';
+        valValue.classList.add('text-slate-400');
+        valTrend.innerHTML = '<span class="text-slate-400">Chỉ hiển thị cho Quản lý</span>';
+        costCols.forEach(el => el.classList.add('invisible'));
+      } else {
+        valValue.textContent = '15.820.500.000 đ';
+        valValue.classList.remove('text-slate-400');
+        valTrend.innerHTML = '<i data-lucide="trending-down" class="w-3.5 h-3.5 mr-1 text-emerald-600"></i><span>-0.5% vốn lưu động tối ưu</span>';
+        costCols.forEach(el => el.classList.remove('invisible'));
+        lucide.createIcons();
+      }
+    }
+
+    // 3. Modal Tác chiến Giải phóng kho
+    function openReleaseModal() {
+      document.getElementById('releaseModal').classList.remove('hidden');
+    }
+
+    function closeReleaseModal() {
+      document.getElementById('releaseModal').classList.add('hidden');
+    }
+
+    function confirmRelease() {
+      closeReleaseModal();
+      
+      // Giả lập giải phóng thành công
+      document.getElementById('alertBanner').classList.add('hidden');
+      document.getElementById('kpi-expired').textContent = '0 chiếc';
+      document.getElementById('kpi-expired').className = 'text-2xl font-bold text-emerald-600 tabular-nums mb-1 font-heading';
+      
+      // Tăng ATP cho Tivi Sony
+      document.getElementById('sony-reserved').textContent = '17';
+      document.getElementById('sony-atp').textContent = '1';
+      document.getElementById('sony-atp').className = 'py-3 px-4 text-right tabular-nums font-bold text-emerald-600 bg-emerald-50';
+      document.getElementById('sony-status').innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">BÌNH THƯỜNG</span>';
+      
+      // Cập nhật thẻ KPI
+      document.getElementById('kpi-atp').textContent = '1,538 chiếc';
+      document.getElementById('kpi-reserved').textContent = '286 chiếc';
+
+      alert('✅ ĐÃ GIẢI PHÓNG THÀNH CÔNG!\n- Đã hủy 3 đơn trả góp quá hạn 48 giờ.\n- Đã khôi phục 3 sản phẩm vào kho khả dụng (ATP).');
+    }
+  </script>
+</body>
+</html>

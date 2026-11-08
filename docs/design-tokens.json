@@ -1,0 +1,155 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "name": "Stock Sense Design Tokens",
+  "version": "1.0.0",
+  "description": "Bộ Design Tokens chuẩn hóa cho hệ thống quản lý kho hàng điện máy thông minh Stock Sense (Ngành bán lẻ điện máy & kho vận)",
+  "primitive": {
+    "color": {
+      "slate": {
+        "50": { "value": "#F8FAFC", "type": "color" },
+        "100": { "value": "#F1F5F9", "type": "color" },
+        "200": { "value": "#E2E8F0", "type": "color" },
+        "300": { "value": "#CBD5E1", "type": "color" },
+        "400": { "value": "#94A3B8", "type": "color" },
+        "500": { "value": "#64748B", "type": "color" },
+        "600": { "value": "#475569", "type": "color" },
+        "700": { "value": "#334155", "type": "color" },
+        "800": { "value": "#1E293B", "type": "color" },
+        "900": { "value": "#0F172A", "type": "color" }
+      },
+      "emerald": {
+        "50": { "value": "#ECFDF5", "type": "color" },
+        "100": { "value": "#D1FAE5", "type": "color" },
+        "500": { "value": "#10B981", "type": "color" },
+        "600": { "value": "#059669", "type": "color" },
+        "700": { "value": "#047857", "type": "color" }
+      },
+      "amber": {
+        "50": { "value": "#FFFBEB", "type": "color" },
+        "100": { "value": "#FEF3C7", "type": "color" },
+        "500": { "value": "#F59E0B", "type": "color" },
+        "600": { "value": "#D97706", "type": "color" },
+        "700": { "value": "#B45309", "type": "color" }
+      },
+      "red": {
+        "50": { "value": "#FEF2F2", "type": "color" },
+        "100": { "value": "#FEE2E2", "type": "color" },
+        "500": { "value": "#EF4444", "type": "color" },
+        "600": { "value": "#DC2626", "type": "color" },
+        "700": { "value": "#B91C1C", "type": "color" }
+      },
+      "blue": {
+        "50": { "value": "#EFF6FF", "type": "color" },
+        "100": { "value": "#DBEAFE", "type": "color" },
+        "500": { "value": "#3B82F6", "type": "color" },
+        "600": { "value": "#2563EB", "type": "color" },
+        "700": { "value": "#1D4ED8", "type": "color" }
+      },
+      "white": { "value": "#FFFFFF", "type": "color" },
+      "black": { "value": "#000000", "type": "color" }
+    },
+    "fontFamily": {
+      "heading": { "value": "'Rubik', sans-serif", "type": "fontFamily" },
+      "body": { "value": "'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", "type": "fontFamily" },
+      "mono": { "value": "'JetBrains Mono', 'SF Mono', Consolas, monospace", "type": "fontFamily" }
+    },
+    "fontSize": {
+      "xs": { "value": "12px", "type": "dimension" },
+      "sm": { "value": "14px", "type": "dimension" },
+      "base": { "value": "16px", "type": "dimension" },
+      "lg": { "value": "18px", "type": "dimension" },
+      "xl": { "value": "20px", "type": "dimension" },
+      "2xl": { "value": "24px", "type": "dimension" },
+      "3xl": { "value": "30px", "type": "dimension" }
+    },
+    "spacing": {
+      "1": { "value": "4px", "type": "dimension" },
+      "2": { "value": "8px", "type": "dimension" },
+      "3": { "value": "12px", "type": "dimension" },
+      "4": { "value": "16px", "type": "dimension" },
+      "5": { "value": "20px", "type": "dimension" },
+      "6": { "value": "24px", "type": "dimension" },
+      "8": { "value": "32px", "type": "dimension" }
+    },
+    "borderRadius": {
+      "sm": { "value": "4px", "type": "dimension" },
+      "md": { "value": "6px", "type": "dimension" },
+      "lg": { "value": "8px", "type": "dimension" },
+      "xl": { "value": "12px", "type": "dimension" },
+      "full": { "value": "9999px", "type": "dimension" }
+    }
+  },
+  "semantic": {
+    "color": {
+      "background": {
+        "default": { "value": "{primitive.color.slate.50}", "type": "color" },
+        "subtle": { "value": "{primitive.color.slate.100}", "type": "color" },
+        "surface": { "value": "{primitive.color.white}", "type": "color" }
+      },
+      "foreground": {
+        "default": { "value": "{primitive.color.slate.900}", "type": "color" },
+        "muted": { "value": "{primitive.color.slate.600}", "type": "color" },
+        "subtle": { "value": "{primitive.color.slate.400}", "type": "color" },
+        "inverse": { "value": "{primitive.color.white}", "type": "color" }
+      },
+      "border": {
+        "default": { "value": "{primitive.color.slate.200}", "type": "color" },
+        "strong": { "value": "{primitive.color.slate.300}", "type": "color" },
+        "focus": { "value": "{primitive.color.blue.600}", "type": "color" }
+      },
+      "brand": {
+        "primary": { "value": "{primitive.color.slate.800}", "type": "color" },
+        "primaryHover": { "value": "{primitive.color.slate.900}", "type": "color" },
+        "accent": { "value": "{primitive.color.emerald.600}", "type": "color" },
+        "accentHover": { "value": "{primitive.color.emerald.700}", "type": "color" }
+      },
+      "status": {
+        "atpAvailable": {
+          "background": { "value": "{primitive.color.emerald.50}", "type": "color" },
+          "border": { "value": "{primitive.color.emerald.100}", "type": "color" },
+          "foreground": { "value": "{primitive.color.emerald.700}", "type": "color" }
+        },
+        "stockoutRisk": {
+          "background": { "value": "{primitive.color.red.50}", "type": "color" },
+          "border": { "value": "{primitive.color.red.100}", "type": "color" },
+          "foreground": { "value": "{primitive.color.red.700}", "type": "color" }
+        },
+        "lowStock": {
+          "background": { "value": "{primitive.color.amber.50}", "type": "color" },
+          "border": { "value": "{primitive.color.amber.100}", "type": "color" },
+          "foreground": { "value": "{primitive.color.amber.700}", "type": "color" }
+        },
+        "inTransit": {
+          "background": { "value": "{primitive.color.blue.50}", "type": "color" },
+          "border": { "value": "{primitive.color.blue.100}", "type": "color" },
+          "foreground": { "value": "{primitive.color.blue.700}", "type": "color" }
+        }
+      }
+    }
+  },
+  "component": {
+    "metricCard": {
+      "padding": { "value": "{primitive.spacing.5}", "type": "dimension" },
+      "borderRadius": { "value": "{primitive.borderRadius.lg}", "type": "dimension" },
+      "background": { "value": "{semantic.color.background.surface}", "type": "color" },
+      "border": { "value": "{semantic.color.border.default}", "type": "color" }
+    },
+    "badge": {
+      "paddingY": { "value": "3px", "type": "dimension" },
+      "paddingX": { "value": "8px", "type": "dimension" },
+      "borderRadius": { "value": "{primitive.borderRadius.sm}", "type": "dimension" },
+      "fontSize": { "value": "{primitive.fontSize.xs}", "type": "dimension" }
+    },
+    "button": {
+      "height": { "value": "40px", "type": "dimension" },
+      "paddingX": { "value": "{primitive.spacing.4}", "type": "dimension" },
+      "borderRadius": { "value": "{primitive.borderRadius.md}", "type": "dimension" },
+      "fontSize": { "value": "{primitive.fontSize.sm}", "type": "dimension" }
+    },
+    "table": {
+      "rowHeight": { "value": "48px", "type": "dimension" },
+      "headerBg": { "value": "{primitive.color.slate.100}", "type": "color" },
+      "border": { "value": "{semantic.color.border.default}", "type": "color" }
+    }
+  }
+}
